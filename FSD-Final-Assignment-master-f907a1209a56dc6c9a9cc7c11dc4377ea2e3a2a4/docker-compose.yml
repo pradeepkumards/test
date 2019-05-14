@@ -1,0 +1,79 @@
+version: '3'
+
+volumes:
+  dbData: null
+    
+networks:
+  notes_app_br:
+    driver: bridge
+
+services:
+  notesapp_mongodb:
+    container_name: notesapp_mongodb
+    image: mvertes/alpine-mongo:latest
+    volumes:
+      - ../dbData/mongo:/data/db
+    expose:
+      - 27017
+    ports:
+      - "27017:27017"
+    networks:
+      - notes_app_br
+
+  mean-notes-app:
+    container_name: mean-notes-app
+    image: mean-notes-app:1.0.0
+    build: ./    
+    expose:
+      - 3000
+    ports:
+      - 3000:3000
+    depends_on:
+      - notesapp_mongodb
+    links:
+      - notesapp_mongodb
+    environment:
+      - MONGO_URL = 'mongodb://notesapp_mongodb:27017/testDB'
+    networks:
+      - notes_app_br
+    entrypoint:
+      - ./docker-entrypoint.sh
+      - 'notesapp_mongodb'
+      - '27017'
+      - 'npm start'
+
+  mean-notes-reminder:
+    container_name: mean-notes-reminder
+    image: mean-notes-reminder:1.0.0
+    build: ./
+    depends_on:
+      - notesapp_mongodb
+    links:
+      - notesapp_mongodb
+    environment:
+      - MONGO_URL = 'mongodb://notesapp_mongodb:27017/testDB'
+    networks:
+      - notes_app_br
+    entrypoint:
+      - ./docker-entrypoint.sh
+      - 'notesapp_mongodb'
+      - '27017'
+      - 'npm run work'
+
+  mean-notes-notify:
+    container_name: mean-notes-notify
+    image: mean-notes-notify:1.0.0
+    build: ./
+    depends_on:
+      - notesapp_mongodb
+    links:
+      - notesapp_mongodb
+    environment:
+      - MONGO_URL = 'mongodb://notesapp_mongodb:27017/testDB'
+    networks:
+      - notes_app_br
+    entrypoint:
+      - ./docker-entrypoint.sh
+      - 'notesapp_mongodb'
+      - '27017'
+      - 'npm run notify'

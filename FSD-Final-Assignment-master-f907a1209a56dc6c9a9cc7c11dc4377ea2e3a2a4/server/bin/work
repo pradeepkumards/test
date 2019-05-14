@@ -1,0 +1,14 @@
+const worker = require('../api/v1/reminders/reminders.controller');
+// Initilization of db
+const dbConn = require('../dbConnection')();
+const logger = require('../logger');
+
+setInterval(() => {
+  worker.getReminderByDate(function(err, result) {
+    process.stdout.write(".");
+    if (err) {
+      logger.error(err);
+    }
+    logger.info(result);
+  });
+}, 1000);

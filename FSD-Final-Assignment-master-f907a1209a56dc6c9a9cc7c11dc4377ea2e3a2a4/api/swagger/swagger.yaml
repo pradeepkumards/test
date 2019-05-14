@@ -1,0 +1,465 @@
+swagger: "2.0"
+info:
+  description: "This is a MEAN Application - Final Project assignment"
+  version: "1.0.0"
+  title: "Keep Notes"
+  contact:
+    email: "leela.konda@cognizant.com"
+host: "localhost:3000"
+basePath: "/api/v1"
+tags:
+- name: "Users"
+  description: "Everything about your Users"
+- name: "Notes"
+  description: "Everything about your Notes"
+- name: "Groups"
+  description: "Everything about your Groups"
+- name: "Reminders"
+  description: "Everything about your Reminders"
+schemes:
+  - "http"
+consumes:
+  - application/json
+  - application/xml
+produces:
+  - application/json
+  - application/xml
+paths:
+  /users/register:
+    post:
+      tags:
+      - "Users"
+      summary: "Register new user"
+      operationId: "registerUser"
+      consumes:
+      - "application/json"
+      - "application/xml"
+      produces:
+      - "application/json"
+      - "application/xml"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Creates new user"
+        required: true
+        schema:
+          $ref: "#/definitions/users"
+      responses:
+        200:
+          description: "successful operation"
+        500:
+          description: "Invalid input"
+  /users/login:
+    post:
+      tags:
+      - "Users"
+      summary: "Logs user into the system"
+      operationId: "authenticate"
+      consumes:
+      - "application/json"
+      - "application/xml"
+      produces:
+      - "application/json"
+      - "application/xml"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Login user"
+        required: true
+        schema:
+          $ref: "#/definitions/users"
+      responses:
+        200:
+          description: "successful operation"
+        500:
+          description: "Email Id & Password are mandatory."
+  /users/logout:
+    post:
+      tags:
+      - "Users"
+      summary: "Logs out user from the system"
+      operationId: "logout"
+      consumes:
+      - "application/json"
+      - "application/xml"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters: []
+      responses:
+        200:
+          description: "you logged out"
+  /notes:
+    post:
+      tags:
+      - "Notes"
+      summary: "Create a new Note"
+      operationId: "addNote"
+      consumes:
+      - "application/json"
+      - "application/xml"
+      produces:
+      - "application/json"
+      - "application/xml"
+      parameters:
+      - name: "Authorization"
+        in: "header"
+        required: true
+        type: "string"
+      - in: "body"
+        name: "body"
+        description: "Create new Note"
+        required: true
+        schema:
+          $ref: "#/definitions/notes"
+      responses:
+        200:
+          description: "successful operation"
+        500:
+          description: "Invalid input"
+      security:
+      - Authorization: []
+    get:
+      tags:
+      - "Notes"
+      summary: "Search/Get Note"
+      operationId: "searchNotes"
+      consumes:
+      - "application/json"
+      - "application/xml"
+      produces:
+      - "application/json"
+      - "application/xml"
+      parameters:
+      - name: "Authorization"
+        in: "header"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+      security:
+      - Authorization: []
+  /notes/:
+    delete:
+      tags:
+      - "Notes"
+      summary: "Delete multiple note by ID"
+      description: "Valid Note Id"
+      operationId: "deleteNote"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "Authorization"
+        in: "header"
+        required: true
+        type: "string"     
+      responses:
+        500:
+          description: "Not found"
+      security:
+      - Authorization: []
+    put:
+      tags:
+      - "Notes"
+      summary: "Update a Note"
+      operationId: "updateNote"
+      consumes:
+      - "application/json"
+      - "application/xml"
+      produces:
+      - "application/json"
+      - "application/xml"
+      parameters:
+      - name: "Authorization"
+        in: "header"
+        required: true
+        type: "string"
+      - name: "noteId"
+        in: "path"
+        description: "ID of the note that needs to be updated"
+        required: true
+        type: "string"
+      - in: "body"
+        name: "body"
+        description: "Update a Note"
+        required: true
+        schema:
+          $ref: "#/definitions/notes"
+      responses:
+        200:
+          description: "successful operation"
+        500:
+          description: "Invalid input"
+      security:
+      - Authorization: []
+  /notes/favorite/:
+    get:
+      tags:
+      - "Notes"
+      summary: "Add multiple note to favorites by ID"
+      description: "Valid Note Id"
+      operationId: "addNoteToFavorites"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "Authorization"
+        in: "header"
+        required: true
+        type: "string"      
+      responses:
+        200:
+          description: "successful operation"
+        500:
+          description: "Not found"
+      security:
+      - Authorization: []
+  /notes/share/{noteId}/{emailId}/{accessType}:
+    get:
+      tags:
+      - "Notes"
+      summary: "Share note by ID to emailId & Access Type"
+      description: "Valid Note Id, Email & Access Type"
+      operationId: "shareUserToNote"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "Authorization"
+        in: "header"
+        required: true
+        type: "string"
+      - name: "noteId"
+        in: "path"
+        description: "ID of the note that needs to be shared"
+        required: true
+        type: "string"
+      - name: "emailId"
+        in: "path"
+        description: "emailId of the user"
+        required: true
+        type: "string"
+      - name: "accessType"
+        in: "path"
+        description: "accessType to the user"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+        500:
+          description: "Not found"
+      security:
+      - Authorization: [] 
+  /groups:
+    post:
+      tags:
+      - "Groups"
+      summary: "Create a new Group"
+      operationId: "addGroup"
+      consumes:
+      - "application/json"
+      - "application/xml"
+      produces:
+      - "application/json"
+      - "application/xml"
+      parameters:
+      - name: "Authorization"
+        in: "header"
+        required: true
+        type: "string"
+      - in: "body"
+        name: "body"
+        description: "Create new Group"
+        required: true
+        schema:
+          $ref: "#/definitions/groups"
+      responses:
+        200:
+          description: "successful operation"
+        500:
+          description: "Invalid input"
+      security:
+      - Authorization: []
+  /groups/addNote/{groupId}:
+    get:
+      tags:
+      - "Groups"
+      summary: "Add note by ID to group"
+      description: "Valid Group Id"
+      operationId: "addNoteToGroup"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "Authorization"
+        in: "header"
+        required: true
+        type: "string"
+      - name: "groupId"
+        in: "path"
+        description: "ID of the group that needs to be added the note"
+        required: true
+        type: "string"
+      - name: "noteId"
+        in: "query"
+        description: "noteId of the note"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+        500:
+          description: "Not found"
+      security:
+      - Authorization: [] 
+  /groups/removeNote/{groupId}:
+    get:
+      tags:
+      - "Groups"
+      summary: "remove note by ID from group"
+      description: "Valid Group Id"
+      operationId: "removeNoteFromGroup"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "Authorization"
+        in: "header"
+        required: true
+        type: "string"
+      - name: "groupId"
+        in: "path"
+        description: "ID of the group that needs to be added the note"
+        required: true
+        type: "string"
+      - name: "noteId"
+        in: "query"
+        description: "noteId of the note"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+        500:
+          description: "Not found"
+      security:
+      - Authorization: []    
+securityDefinitions:  
+  api_key:
+    type: "api_key"
+    name: "api_key"
+    in: "header"
+definitions:
+  users:
+    type: "object"
+    required:
+    - "name"
+    - "emailId"
+    - "password"
+    properties:
+      userId:
+        type: "string"
+      name:
+        type: "string"
+      emailId:
+        type: "string"
+      password:
+        type: "string"
+      sharedNotes:
+        type: "array"
+        items:
+          $ref: "#/definitions/notes"
+    xml:
+      name: "users"
+  notes:
+    type: "object"
+    required:
+    - "title"
+    properties:
+      noteId:
+        type: "string"
+      userId:
+        type: "string"
+      title:
+        type: "string"
+      description:
+        type: "string"
+        default: ""
+      isFavourite:
+        type: "boolean"
+        default: false
+      sharedNotes:
+        type: "array"
+        items:
+          $ref: "#/definitions/users"
+    xml:
+      name: "notes"
+  groups:
+    type: "object"
+    required:
+    - "title"
+    properties:
+      groupId:
+        type: "string"
+      userId:
+        type: "string"
+      title:
+        type: "string"
+      description:
+        type: "string"
+        default: ""
+      groupIcon:
+        type: "string"
+        default: ""
+      sharedNotes:
+        type: "array"
+        items:
+          $ref: "#/definitions/notes"
+    xml:
+      name: "groups"
+  reminders:
+    type: "object"
+    required:
+    - "startDateTime"
+    - "endDateTime"
+    - "frequency"
+    properties:
+      reminderId:
+        type: "string"
+      noteId:
+        type: "string"
+      userId:
+        type: "string"
+      startDateTime:
+        type: "string"
+        format: "date-time"
+      endDateTime:
+        type: "string"
+        format: "date-time"
+      frequency:
+        type: "string"
+        description: "Frequency of reminders"
+        enum:
+        - "once"
+        - "daily"
+        - "weekly"
+        - "monthly"
+        - "yearly"
+        default: 'once'
+      lastReminder:
+        type: "string"
+        default: ''
+      nextReminder:
+        type: "string"
+        default: ''
+      snoozeTime:
+        type: "string"
+        default: ''
+      status:
+        type: "string"
+        default: ''
+    xml:
+      name: "reminders"

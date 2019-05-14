@@ -1,0 +1,9 @@
+const app = require('../app');
+const config = require('../appConfig');
+const logger = require('../logger');
+
+const _port = (config.WWW_PORT || 3000);
+
+app.listen(_port, () => {
+  logger.info('App is listening to request on port:', _port);
+});
